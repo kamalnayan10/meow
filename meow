@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import sys
+import argparse
+import traceback
+from agent import gemini_response
+from model import Response
+from helper import get_directory_context, print_description_pretty, print_cmd_pretty
+
+def parse_arguments(sys_args):
+    """Parses command-line arguments using argparse."""
+    parser = argparse.ArgumentParser(
+        prog="asst",
+        description="An AI assistant for your command line."
+    )
+    parser.add_argument(
+        "query",
+        nargs="+",
+        help="The natural language query for the AI."
+    )
+    verbosity_group = parser.add_mutually_exclusive_group()
+    verbosity_group.add_argument(
+        "-q", "--quiet",
+        action="store_false",
+        dest="verbose",
+        help="Hide the command description."
+    )
+    parser.set_defaults(verbose=True)
+    return parser.parse_args(sys_args)
+
+def main(sys_args):
+    """
+    The main function of the assistant, merging every module together
+    """
+    
+    try:
+        args = parse_arguments(sys_args[1:])
+    except SystemExit:
+        # argparse handles the --help flag and errors by exiting.
+        return
+
+    # 2. Construct a clean, structured prompt for the AI.
+    user_prompt = " ".join(args.query)
+
+    directory_structure = get_directory_context()
+    user_prompt += f"""
+    The current directory tree looks like this:
+    {directory_structure}
+    """
+
+    try:
+        res = gemini_response(user_prompt)
+
+        structured_res: list[Response] = res.parsed
+        cmd = structured_res[0].command
+        desc = structured_res[0].description
+
+        if args.verbose:
+            print_description_pretty(desc)
+        print(print_cmd_pretty(cmd),file=sys.stderr)
+
+        print(cmd, end="")
+    except:
+        print("Something went wrong!")
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    sys_args = sys.argv
+    main(sys_args)
