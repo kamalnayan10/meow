@@ -1,0 +1,4 @@
+protobuf
+pydantic
+python-dotenv
+google-genai

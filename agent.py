@@ -2,6 +2,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 import os
+
 from prompts import GEMINI_PROMPT
 from model import Response
 

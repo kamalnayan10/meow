@@ -3,6 +3,7 @@
 import sys
 import argparse
 import traceback
+
 from agent import gemini_response
 from model import Response
 from helper import get_directory_context, print_description_pretty, print_cmd_pretty
