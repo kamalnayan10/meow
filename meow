@@ -4,8 +4,7 @@ import sys
 import argparse
 import traceback
 
-from agent import gemini_response
-from model import Response
+from agent import ollama_response
 from helper import get_directory_context, print_description_pretty, print_cmd_pretty
 
 def parse_arguments(sys_args):
@@ -50,11 +49,9 @@ def main(sys_args):
     """
 
     try:
-        res = gemini_response(user_prompt)
-
-        structured_res: list[Response] = res.parsed
-        cmd = structured_res[0].command
-        desc = structured_res[0].description
+        res = ollama_response(user_prompt)
+        cmd = res.command
+        desc = res.description
 
         if args.verbose:
             print_description_pretty(desc)
@@ -68,3 +65,7 @@ def main(sys_args):
 if __name__ == "__main__":
     sys_args = sys.argv
     main(sys_args)
+
+
+
+
